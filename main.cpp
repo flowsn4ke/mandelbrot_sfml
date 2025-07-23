@@ -60,7 +60,6 @@ int main()
                 z = std::pow(z,2) + c;
 
                 if (escapes(z)) {
-                    // TODO: Assign color / luminosity to current pixel
                     auto color = static_cast<uint8_t>(255 * iteration / ITERATIONS);
                     image.setPixel({static_cast<unsigned>(x), static_cast<unsigned>(y)}, sf::Color(color, color, color));
                     break;

@@ -31,6 +31,7 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "Mandelbrot Set");
     window.setVerticalSyncEnabled(true);
+    window.setPosition({0, 0});
 
     // Create the image we want to draw
     sf::Image image({WINDOW_WIDTH, WINDOW_HEIGHT}, sf::Color::Black);
@@ -56,7 +57,10 @@ int main()
                 const double c_imag = linear_interpolation(y, 0, WINDOW_HEIGHT, y_min, y_max);
                 std::complex<double> c(c_real, c_imag);
 
-                z = std::pow(z,2) + c;
+                // Function that defines the mandelbrot set which we need to iterate
+                // The pow() function is slow, which is why I replaced it with a simple multiplication.
+                // At 1080x1080p, pow() takes ~1250ms longer than the multiplication.
+                z = z * z + c;
 
                 if (escapes(z)) {
                     auto color = static_cast<uint8_t>(255 * iteration / ITERATIONS);

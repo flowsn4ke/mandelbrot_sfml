@@ -2,14 +2,11 @@
 #include <complex>
 #include <cmath>
 #include <SFML/Graphics.hpp>
+#include "Timer.h"
 
 #define ITERATIONS 100
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 1080
-#define X_MIN (-2)
-#define Y_MIN (-2)
-#define X_MAX 2
-#define Y_MAX 2
 #define MAGNITUDE_THRESHOLD 2
 
 // std::tuple<float, float>
@@ -20,14 +17,11 @@ double linear_interpolation(const double value, const double old_min, const doub
     return (new_min) + ((new_max) - (new_min)) * ((value) - (old_min)) / ((old_max) - (old_min));
 }
 
-bool escapes(const std::complex<double> val) {
-    if (val == std::complex<double>(-0.05, -0.05)) {
-        std::cout << "Absolute value: " << std::abs(val) << std::endl;
-    }
-
+bool escapes(const std::complex<double> val)
+{
     return std::abs(val) > MAGNITUDE_THRESHOLD;
 }
-
+// https://linux.die.net/man/3/va_arg => Get input from the command line
 int main()
 {
     double x_min = -2;
@@ -41,18 +35,23 @@ int main()
     // Create the image we want to draw
     sf::Image image({WINDOW_WIDTH, WINDOW_HEIGHT}, sf::Color::Black);
 
-    time_t start, finish;
-    time(&start);
+    Timer timer;
 
+    // TODO: Look into compiling with nvcc to split and delegate calculations to the graphics card
+    // TODO: Turn rendering into its own function, which would return the image to be drawn
     // iterate over all pixels, row by row
-    for (int x = 0; x < WINDOW_WIDTH; x++) {
-        for (int y = 0; y < WINDOW_HEIGHT; y++) {
+    for (int x = 0; x < WINDOW_WIDTH; x++)
+    {
+        // TODO: Check if nested loops are actually bad for performance (for equal number of iterations)
+        for (int y = 0; y < WINDOW_HEIGHT; y++)
+        {
             int iteration = 0;
 
             std::complex<double> z(0.0, 0.0);
 
             // Get a finer and finer representation of the set
-            while (iteration++ < ITERATIONS) {
+            while (iteration++ < ITERATIONS)
+            {
                 const double c_real = linear_interpolation(x, 0, WINDOW_WIDTH, x_min, x_max);
                 const double c_imag = linear_interpolation(y, 0, WINDOW_HEIGHT, y_min, y_max);
                 std::complex<double> c(c_real, c_imag);
@@ -68,13 +67,12 @@ int main()
         }
     }
 
+    timer.stop();
+    timer.print();
+
     if (image.saveToFile("mandelbrot.jpg")) {
         std::cout << "Image saved successfully!" << std::endl;
     }
-
-    time(&finish);
-    auto time_taken = static_cast<double>(finish - start);
-    std::cout << "Time taken by program is : " << std::fixed << time_taken << std::setprecision(5) << " sec " << std::endl;
 
     sf::Texture texture;
 
@@ -85,27 +83,16 @@ int main()
 
     sf::Sprite sprite(texture);
 
-    while (window.isOpen()) {
-        while (const std::optional event = window.pollEvent()) {
+    while (window.isOpen())
+    {
+        while (const std::optional event = window.pollEvent())
+        {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
-            // else if (event->is<sf::Event::MouseWheelScrolled>()) {
-            //     const auto& scrollEvent = std::get<sf::MouseWheelScrollEvent>(*event);
-            //     double zoom_factor = (scrollEvent.delta > 0) ? 0.9 : 1.1;
-            //
-            //     double x_center = (x_min + x_max) / 2.0;
-            //     double y_center = (y_min + y_max) / 2.0;
-            //
-            //     double x_range = (x_max - x_min) * zoom_factor;
-            //     double y_range = (y_max - y_min) * zoom_factor;
-            //
-            //     x_min = x_center - x_range / 2.0;
-            //     x_max = x_center + x_range / 2.0;
-            //     y_min = y_center - y_range / 2.0;
-            //     y_max = y_center + y_range / 2.0;
-            // }
-
+            // TODO: Dispatch event with dynamic list of handlers, as per Gaetan's example.
+            // TODO: Look for a better pattern though,
+            // TODO: Handle zooming and panning with rerendering
         }
 
         window.clear();

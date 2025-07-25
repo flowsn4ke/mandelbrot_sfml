@@ -6,6 +6,8 @@ set(SFML_STATIC_LIBRARIES OFF)
 
 find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio Network System)
 
-add_executable(mandelbrot_sfml main.cpp)
+add_executable(mandelbrot_sfml main.cpp
+        Timer.cpp
+        Timer.h)
 
 target_link_libraries(mandelbrot_sfml PRIVATE SFML::Graphics SFML::Audio SFML::Network SFML::System)

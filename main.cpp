@@ -4,9 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include "Timer.h"
 
-#define ITERATIONS 333
-#define WINDOW_WIDTH 4096
-#define WINDOW_HEIGHT 4096
+#define ITERATIONS 100
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 1080
 #define MAGNITUDE_THRESHOLD 2
 
 // std::tuple<float, float>
@@ -50,16 +50,16 @@ int main()
 
             std::complex<double> z(0.0, 0.0);
 
+            const double c_real = linear_interpolation(x, 0, WINDOW_WIDTH, x_min, x_max);
+            const double c_imag = linear_interpolation(y, 0, WINDOW_HEIGHT,  y_max,y_min);
+            std::complex<double> c(c_real, c_imag);
+
             // Get a finer and finer representation of the set
             while (iteration++ < ITERATIONS)
             {
-                const double c_real = linear_interpolation(x, 0, WINDOW_WIDTH, x_min, x_max);
-                const double c_imag = linear_interpolation(y, 0, WINDOW_HEIGHT,  y_max,y_min);
-                std::complex<double> c(c_real, c_imag);
-
                 // Function that defines the mandelbrot set which we need to iterate
                 // The pow() function is slow, which is why I replaced it with a simple multiplication.
-                // At 1080x1080p, pow() takes ~1250ms longer than the multiplication (~65% of the time !)
+                // At 1080x1080p, pow() takes ~1300ms longer than the multiplication (~66% of the time !)
                 z = z * z + c;
 
                 if (escapes(z)) {

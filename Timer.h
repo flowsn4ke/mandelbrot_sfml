@@ -18,16 +18,20 @@ public:
 
     void stop();
 
+    void reset();
+
     [[nodiscard]] double elapsed() const;
 
     [[nodiscard]] std::string str() const;
 
     void print() const;
 
+// Everything is private by default.
 private:
-    Clock::time_point _start;
-    Clock::time_point _finish;
-    bool _running;
+    // It's common to use an underscore at the end of the variable to avoid variable shadowing (scope) issues
+    Clock::time_point start_;
+    Clock::time_point stop_;
+    bool running_;
 };
 
 

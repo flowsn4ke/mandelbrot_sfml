@@ -8,6 +8,7 @@ find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio Network System)
 
 add_executable(mandelbrot_sfml main.cpp
         Timer.cpp
-        Timer.h)
+        Timer.h
+)
 
 target_link_libraries(mandelbrot_sfml PRIVATE SFML::Graphics SFML::Audio SFML::Network SFML::System)
